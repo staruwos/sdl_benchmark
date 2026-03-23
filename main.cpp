@@ -16,11 +16,13 @@ struct MovingRect {
     SDL_Color color;
 };
 
-float randomFloat(float min, float max) {
+float randomFloat(float min, float max) 
+{
     return min + static_cast<float>(rand()) / (static_cast<float>(RAND_MAX / (max - min)));
 }
 
-SDL_Color randomColor() {
+SDL_Color randomColor() 
+{
     return { 
         static_cast<Uint8>(rand() % 256), 
         static_cast<Uint8>(rand() % 256), 
@@ -29,8 +31,10 @@ SDL_Color randomColor() {
     };
 }
 
-void addRects(std::vector<MovingRect>& rects, int count) {
-    for (int i = 0; i < count; ++i) {
+void addRects(std::vector<MovingRect>& rects, int count) 
+{
+    for (int i = 0; i < count; ++i) 
+    {
         rects.push_back({
             randomFloat(0, WINDOW_WIDTH - RECT_SIZE),
             randomFloat(0, WINDOW_HEIGHT - RECT_SIZE),
@@ -41,15 +45,17 @@ void addRects(std::vector<MovingRect>& rects, int count) {
     }
 }
 
-int main(int argc, char* argv[]) {
-#ifdef USE_GLES2
-    // Force OpenGL ES 2.0 Driver
-    SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");    
-    // Disable batching (can sometimes cause the "flickering" issue)
-    SDL_SetHint(SDL_HINT_RENDER_BATCHING, "0");
-#endif
+int main(int argc, char* argv[]) 
+{
+    #ifdef USE_GLES2
+        // Force OpenGL ES 2.0 Driver
+        SDL_SetHint(SDL_HINT_RENDER_DRIVER, "opengles2");    
+        // Disable batching (can sometimes cause the "flickering" issue)
+        SDL_SetHint(SDL_HINT_RENDER_BATCHING, "0");
+    #endif
 
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (SDL_Init(SDL_INIT_VIDEO) < 0) 
+    {
         std::cerr << "SDL Error: " << SDL_GetError() << std::endl;
         return 1;
     }
@@ -64,7 +70,8 @@ int main(int argc, char* argv[]) {
 
     // Create Renderer
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer) {
+    if (!renderer) 
+    {
         std::cerr << "Renderer Error: " << SDL_GetError() << std::endl;
         return 1;
     }
@@ -90,12 +97,14 @@ int main(int argc, char* argv[]) {
     int frameCount = 0;
     Uint32 fpsTimer = lastTime;
 
-    while (!quit) {
+    while (!quit) 
+    {
         Uint32 currentTime = SDL_GetTicks();
         float deltaTime = (currentTime - lastTime) / 1000.0f;
         lastTime = currentTime;
 
-        while (SDL_PollEvent(&e) != 0) {
+        while (SDL_PollEvent(&e) != 0) 
+        {
             if (e.type == SDL_QUIT) quit = true;
             else if (e.type == SDL_KEYDOWN) {
                 if (e.key.keysym.sym == SDLK_ESCAPE) quit = true;
@@ -104,7 +113,8 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        for (auto& rect : rects) {
+        for (auto& rect : rects) 
+        {
             rect.x += rect.dx * deltaTime;
             rect.y += rect.dy * deltaTime;
 
@@ -115,7 +125,8 @@ int main(int argc, char* argv[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        for (const auto& rect : rects) {
+        for (const auto& rect : rects) 
+        {
             SDL_SetRenderDrawColor(renderer, rect.color.r, rect.color.g, rect.color.b, rect.color.a);
             SDL_Rect r = { static_cast<int>(rect.x), static_cast<int>(rect.y), RECT_SIZE, RECT_SIZE };
             SDL_RenderFillRect(renderer, &r);
@@ -124,7 +135,8 @@ int main(int argc, char* argv[]) {
         SDL_RenderPresent(renderer);
 
         frameCount++;
-        if (currentTime - fpsTimer >= 1000) {
+        if (currentTime - fpsTimer >= 1000) 
+        {
             std::cout << "FPS: " << frameCount << " | Objs: " << rects.size() << std::endl;
             frameCount = 0;
             fpsTimer = currentTime;
